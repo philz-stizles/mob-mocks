@@ -3,21 +3,13 @@ import withErrorHandler from '@/middlewares/with-error-handler';
 import { AuthService } from '@/services';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '1mb',
-    },
-  },
-};
-
 type ResponseData<T> = {
   status: boolean;
   message: string;
   data: T;
 };
 
-const handler = async (
+export const POST = async (
   req: NextApiRequest,
   res: NextApiResponse<ResponseData<{} | null>>
 ) => {
@@ -35,4 +27,4 @@ const handler = async (
   }
 };
 
-export default withErrorHandler(handler, '[SIGNUP] => ');
+// export default withErrorHandler(handler, '[SIGNUP] => ');

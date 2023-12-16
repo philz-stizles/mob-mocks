@@ -1,18 +1,21 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { absoluteUrl } from '@/lib/utils';
-import { auth } from '@/lib/auth';
+import { authOptions } from '@/lib/auth';
 import { SubscriptionService } from '@/services';
+import { getServerSession } from 'next-auth';
 
 export async function GET() {
   try {
     const settingsUrl = absoluteUrl('/settings');
-    const { userId } = auth();
-    const user = await currentUser();
+    const session = await getServerSession(authOptions);
 
-    if (!userId || !user) {
+    if (!session || !session.user) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
+
+    const { user } = session;
+    const userId = user.id;
 
     const userSubscription = await SubscriptionService.findOne({
       userId,
@@ -33,7 +36,7 @@ export async function GET() {
       payment_method_types: ['card'],
       mode: 'subscription',
       billing_address_collection: 'auto',
-      customer_email: user.emailAddresses[0].emailAddress,
+      customer_email: user.email!,
       line_items: [
         {
           price_data: {
